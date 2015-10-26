@@ -1,7 +1,5 @@
 ﻿using System;
 using CocosSharp;
-using CocosSharpFormsSample;
-using CocosSharpFormsSample.Droid;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
 
@@ -17,7 +15,7 @@ namespace CocosSharp
             if (e.OldElement != null || this.Element == null)
                 return;
 
-            var nativeView = new CCGameView (Forms.Context);
+            var nativeView = new CCGameView (Context);
 
             CommonOnElementChanged(nativeView);
         }

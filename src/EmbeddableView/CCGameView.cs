@@ -99,6 +99,15 @@ namespace CocosSharp
         public CCRenderer Renderer { get { return DrawManager != null ? DrawManager.Renderer : null; } }
         public CCAudioEngine AudioEngine { get; private set; }
         public CCActionManager ActionManager { get; private set; }
+
+        public CCContentManager ContentManager { get; private set; }
+        internal CCFontAtlasCache FontAtlasCache { get; private set; }
+        public CCSpriteFontCache SpriteFontCache { get; private set; }
+        public CCSpriteFrameCache SpriteFrameCache { get; private set; }
+        public CCParticleSystemCache ParticleSystemCache { get; private set; }
+        public CCTextureCache TextureCache { get; private set; }
+        public CCAnimationCache AnimationCache { get; private set; }
+
         public CCStats Stats { get; private set; }
 
         public bool DepthTesting
@@ -222,9 +231,6 @@ namespace CocosSharp
             if (viewInitialised)
                 return;
 
-            if (currentViewInstance != null)
-                throw new NotSupportedException("CCGameView: Cannot instantiate multiple views concurrently.");
-
             PlatformInitialise();
 
             ActionManager = new CCActionManager();
@@ -233,9 +239,11 @@ namespace CocosSharp
             AudioEngine = CCAudioEngine.SharedEngine;
             Scheduler = CCScheduler.SharedScheduler;
 
-            Stats = new CCStats ();
+            Stats = new CCStats();
 
             InitialiseGraphicsDevice();
+
+            InitialiseResourceCaches();
 
             InitialiseRunLoop();
 
@@ -256,18 +264,38 @@ namespace CocosSharp
             presParams.RenderTargetUsage = RenderTargetUsage.PreserveContents;
             presParams.DepthStencilFormat = DepthFormat.Depth24Stencil8;
             presParams.BackBufferFormat = XnaSurfaceFormat.Color;
-            presParams.RenderTargetUsage = RenderTargetUsage.PreserveContents;
             PlatformInitialiseGraphicsDevice(ref presParams);
 
             graphicsDevice = new GraphicsDevice(GraphicsAdapter.DefaultAdapter, graphicsProfile, presParams);
             DrawManager = new CCDrawManager(graphicsDevice);
 
-            // Fix this!
             CCDrawManager.SharedDrawManager = DrawManager;
 
             graphicsDeviceService = new CCGraphicsDeviceService(graphicsDevice);
+        }
 
-            var serviceProvider = CCContentManager.SharedContentManager.ServiceProvider as GameServiceContainer;
+        void InitialiseResourceCaches()
+        {
+            ContentManager = new CCContentManager(new GameServiceContainer());
+            FontAtlasCache = new CCFontAtlasCache();
+            SpriteFontCache = new CCSpriteFontCache(ContentManager);
+            SpriteFrameCache = new CCSpriteFrameCache();
+            ParticleSystemCache = new CCParticleSystemCache(Scheduler);
+            TextureCache = new CCTextureCache(Scheduler);
+            AnimationCache = new CCAnimationCache();
+
+            // Link new caches to singleton instances
+            // For now, this is required because a layer's resources (e.g. sprite)
+            // may be loaded prior to a gameview being associated with that layer
+            CCContentManager.SharedContentManager = ContentManager;
+            CCFontAtlasCache.SharedFontAtlasCache = FontAtlasCache;
+            CCSpriteFontCache.SharedSpriteFontCache = SpriteFontCache;
+            CCSpriteFrameCache.SharedSpriteFrameCache = SpriteFrameCache;
+            CCParticleSystemCache.SharedParticleSystemCache = ParticleSystemCache;
+            CCTextureCache.SharedTextureCache = TextureCache;
+            CCAnimationCache.SharedAnimationCache = AnimationCache;
+
+            var serviceProvider = ContentManager.ServiceProvider as GameServiceContainer;
             serviceProvider.AddService(typeof(IGraphicsDeviceService), graphicsDeviceService);
         }
 
@@ -309,7 +337,10 @@ namespace CocosSharp
 
         protected override void Dispose(bool disposing)
         {
-            if(disposed)
+            // Here we check this == null just in case we are coming from a visual designer
+            // like Visual Studio XAML designer.  This may need to be revisited later
+            // after other platforms and devices have been implemented.
+            if(disposed || this == null)
                 return;
 
             PlatformDispose(disposing);
@@ -329,11 +360,32 @@ namespace CocosSharp
                 }
             }
 
+            var serviceProvider = CCContentManager.SharedContentManager.ServiceProvider as GameServiceContainer;
+            serviceProvider.RemoveService(typeof(IGraphicsDeviceService));
+
             currentViewInstance = null;
 
             disposed = true;
 
             base.Dispose(disposing);
+        }
+
+        // MonoGame maintains static references to the underlying context, and more generally, 
+        // there's no guarantee that a previous instance of CCGameView will have been disposed by the GC.
+        // However, given the limitation imposed by MonoGame to only have one active instance, we need
+        // to ensure that this indeed the case and explicitly Dispose of any old game views.
+        void RemoveExistingView()
+        {
+            if (currentViewInstance != null && currentViewInstance.Target != this) 
+            {
+                var prevGameView = currentViewInstance.Target as CCGameView;
+
+                if (prevGameView != null) 
+                {
+                    prevGameView.Paused = true;
+                    prevGameView.Dispose();
+                }
+            }
         }
 
         #endregion Cleaning up

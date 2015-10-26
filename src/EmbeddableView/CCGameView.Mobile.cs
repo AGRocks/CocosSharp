@@ -37,7 +37,7 @@ namespace CocosSharp
 
         #region Initialisation
 
-        void InitialiseInputHandling()
+        void InitialiseMobileInputHandling()
         {
             touchMap = new Dictionary<int, CCTouch>();
             incomingNewTouches = new List<CCTouch>();
@@ -47,6 +47,7 @@ namespace CocosSharp
             TouchEnabled = true;
 
             Accelerometer = new CCAccelerometer(this);
+
         }
 
         #endregion Initialisation
@@ -66,6 +67,12 @@ namespace CocosSharp
         }
 
         #endregion Accelerometer handling
+
+
+        public void DesktopPlatformUpdatePaused()
+        {
+
+        }
 
 
         #region Touch handling
@@ -113,7 +120,7 @@ namespace CocosSharp
             }
         }
 
-        void ProcessInput()
+        void ProcessMobileInput()
         {
             lock (touchLock) 
             {
@@ -147,6 +154,9 @@ namespace CocosSharp
                     incomingReleaseTouches.Clear ();
                 }
             }
+
+            if (Accelerometer.Enabled)
+                Accelerometer.Update ();
         }
 
         // Prevent memory leaks by removing stale touches

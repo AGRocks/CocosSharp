@@ -24,7 +24,10 @@ namespace tests
 
         static List<Func<CCLayer>> eventDispatcherTestFunctions = new List<Func<CCLayer>> ()
             {
+                                () => new MouseEventTest(),
+
                 () => new TouchableSpriteTest(),
+                () => new TouchableSpriteTest2(),
                 () => new FixedPriorityTest(),
                 () => new MouseEventTest(),
                 () => new LabelKeyboardEventTest(),
@@ -152,6 +155,12 @@ namespace tests
 		CCLabel mouseButtonUp;
 		CCLabel scrollWheel;
 
+        public MouseEventTest()
+        {
+            Color = CCColor3B.Blue;
+            Opacity = 255;
+        }
+
 		public override void OnEnter ()
 		{
             CCRect visibleBounds = VisibleBoundsWorldspace;
@@ -204,7 +213,8 @@ namespace tests
 		}
 		void OnMouseMove(CCEventMouse mouseEvent)
 		{
-			mousePosition.Text = "Mouse Position: X: " + mouseEvent.CursorX + " Y: " + mouseEvent.CursorY;
+            var cursor = mouseEvent.Cursor;
+			mousePosition.Text = "Mouse Position: X: " + cursor.X + " Y: " + cursor.Y;
 		}
 		public override string Title
 		{
@@ -291,8 +301,10 @@ namespace tests
 			// Create our Accelerometer Listener
 			var listener = new CCEventListenerAccelerometer();
 
+            #if !MACOS
             if (!GameView.Accelerometer.Enabled)
                 GameView.Accelerometer.Enabled = true;
+            #endif
 
 			// We will use Lambda expressions to attach the event process
 			listener.OnAccelerate = (acceleration) => {
@@ -475,6 +487,92 @@ namespace tests
 		}
 
 	}
+
+    public class TouchableSpriteTest2 : EventDispatcherTest
+    {
+
+        public override void OnEnter()
+        {
+            base.OnEnter();
+
+            var visibleBounds = VisibleBoundsWorldspace;
+            var origin = VisibleBoundsWorldspace.Origin;
+            var size = VisibleBoundsWorldspace.Size;
+
+            var sprite1 = new CCSprite("Images/CyanSquare.png");
+            sprite1.Position = origin + size.Center + new CCPoint(-80, 80);
+            AddChild(sprite1, 10);
+
+            var follow = new CCFollow(sprite1, new CCRect(0, 0, 3000, 600));
+            RunAction(follow);
+
+            sprite1.PositionX = size.Width + 100;
+            sprite1.PositionY = size.Height / 2;
+
+            // Make sprite1 touchable
+            var listener1 = new CCEventListenerTouchOneByOne();
+            listener1.IsSwallowTouches = true;
+
+            listener1.OnTouchBegan = (touch, touchEvent) =>
+            {
+                var layerOffset = Layer.PositionWorldspace;
+                var target = (CCSprite)touchEvent.CurrentTarget;
+                var locationInNode = touch.Location;
+
+                CCRect rect = target.BoundingBoxTransformedToWorld;
+                rect.Origin += layerOffset;
+
+                if (rect.ContainsPoint(locationInNode))
+                {
+                    CCLog.Log("sprite began... x = {0}, y = {1}", locationInNode.X, locationInNode.Y);
+                    target.Opacity = 180;
+                    return true;
+                }
+                return false;
+            };
+
+            listener1.OnTouchMoved = (touch, touchEvent) =>
+            {
+                var target = (CCSprite)touchEvent.CurrentTarget;
+                CCPoint pt = touch.PreviousLocation + touch.Delta;
+                target.Position = target.WorldToParentspace(pt);
+            };
+
+            listener1.OnTouchEnded = (touch, touchEvent) =>
+            {
+                var target = (CCSprite)touchEvent.CurrentTarget;
+                CCLog.Log("sprite onTouchesEnded..");
+                target.Opacity = 255;
+            };
+
+
+            sprite1.AddEventListener(listener1);
+
+        }
+
+        public override void OnExit()
+        {
+            base.OnExit();
+
+        }
+
+        public override string Title
+        {
+            get
+            {
+                return "Touchable Sprite Test 2";
+            }
+        }
+
+        public override string Subtitle
+        {
+            get
+            {
+                return "Touch Event when using CCFollow";
+            }
+        }
+
+    }
 
 	public class FixedPriorityTest : EventDispatcherTest
 	{

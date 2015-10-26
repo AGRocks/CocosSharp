@@ -15,7 +15,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CocosSharp.iOS", "..\src\Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoGame.Framework.Net.iOS", "..\MonoGame\MonoGame.Framework\MonoGame.Framework.Net.iOS.csproj", "{D4838656-8545-4DC5-8822-D4AD313E17AC}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CocosSharp.Tests.Common", "tests\classes\CocosSharp.Tests.Common.shproj", "{9F5A43EA-FF24-4167-9D3C-2F182E8454AF}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CocosSharp.Tests.Mobile", "tests\classes\CocosSharp.Tests.Mobile.shproj", "{813ADEF4-8197-458C-A870-0AD23C610C8A}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		tests\classes\CocosSharp.Tests.Mobile.projitems*{813adef4-8197-458c-a870-0ad23c610c8a}*SharedItemsImports = 13
+		tests\classes\CocosSharp.Tests.Common.projitems*{4ef34363-1190-4444-9f4b-7a262b397ee8}*SharedItemsImports = 4
+		tests\classes\CocosSharp.Tests.Mobile.projitems*{4ef34363-1190-4444-9f4b-7a262b397ee8}*SharedItemsImports = 4
+		tests\classes\CocosSharp.Tests.Common.projitems*{9f5a43ea-ff24-4167-9d3c-2f182e8454af}*SharedItemsImports = 13
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Ad-Hoc|iPhone = Ad-Hoc|iPhone
 		Ad-Hoc|iPhoneSimulator = Ad-Hoc|iPhoneSimulator

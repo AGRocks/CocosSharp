@@ -73,6 +73,8 @@ namespace CocosSharp
 
         GameViewTimeSource timeSource;
 
+        NSObject backgroundObserver;
+        NSObject foregroundObserver;
 
         #region Constructors
 
@@ -80,20 +82,21 @@ namespace CocosSharp
         public CCGameView(NSCoder coder) 
             : base(coder)
         {
-            BeginInitiliase();
+            BeginInitialise();
         }
 
         public CCGameView(RectangleF frame)
             : base(frame)
         {
-            BeginInitiliase();
+            BeginInitialise();
         }
 
-        void BeginInitiliase()
+        void BeginInitialise()
         {
             LayerRetainsBacking = true;
             LayerColorFormat = EAGLColorFormat.RGBA8;
             ContextRenderingApi = EAGLRenderingAPI.OpenGLES2;
+            ContentScaleFactor = UIScreen.MainScreen.Scale;
         }
 
         #endregion Constructors
@@ -104,8 +107,10 @@ namespace CocosSharp
         void PlatformInitialise()
         {
             AutoResize = true;
-            NSNotificationCenter.DefaultCenter.AddObserver(UIApplication.DidEnterBackgroundNotification, (n)=> Paused = true);
-            NSNotificationCenter.DefaultCenter.AddObserver(UIApplication.WillEnterForegroundNotification, (n)=> Paused = false);
+            backgroundObserver = NSNotificationCenter.DefaultCenter.AddObserver(
+                UIApplication.DidEnterBackgroundNotification, (n)=> Paused = true);
+            foregroundObserver = NSNotificationCenter.DefaultCenter.AddObserver(
+                UIApplication.WillEnterForegroundNotification, (n)=> Paused = false);
         }
 
         void PlatformInitialiseGraphicsDevice(ref PresentationParameters presParams)
@@ -129,6 +134,8 @@ namespace CocosSharp
             // Fetch desired depth / stencil size
             // Need to more robustly handle
 
+            RemoveExistingView();
+
             if (bufferCreated)
                 return;
 
@@ -139,8 +146,8 @@ namespace CocosSharp
             CAEAGLLayer eaglLayer = (CAEAGLLayer) Layer;
 
             var newSize = new System.Drawing.Size(
-                (int) Math.Round(eaglLayer.Bounds.Size.Width), 
-                (int) Math.Round(eaglLayer.Bounds.Size.Height));
+                (int) Math.Round(eaglLayer.Bounds.Size.Width * Layer.ContentsScale), 
+                (int) Math.Round(eaglLayer.Bounds.Size.Height * Layer.ContentsScale));
 
             GL.GenRenderbuffers(1, out depthbuffer);
             GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, depthbuffer);
@@ -178,8 +185,8 @@ namespace CocosSharp
                 return;
 
             var newSize = new System.Drawing.Size(
-                (int) Math.Round(Layer.Bounds.Size.Width), 
-                (int) Math.Round(Layer.Bounds.Size.Height));
+                (int) Math.Round(Layer.Bounds.Size.Width * Layer.ContentsScale), 
+                (int) Math.Round(Layer.Bounds.Size.Height * Layer.ContentsScale));
 
             Size = newSize;
 
@@ -203,6 +210,11 @@ namespace CocosSharp
             LoadGame();
         }
 
+        void InitialiseInputHandling()
+        {
+            InitialiseMobileInputHandling ();
+        }
+
         #endregion Initialisation
 
 
@@ -210,6 +222,8 @@ namespace CocosSharp
 
         void PlatformDispose(bool disposing)
         {
+            MakeCurrent();
+
             if (disposing)
             {
                 if (timeSource != null)
@@ -219,8 +233,11 @@ namespace CocosSharp
                 }
             }
 
-            NSNotificationCenter.DefaultCenter.RemoveObserver(this, UIApplication.DidEnterBackgroundNotification);
-            NSNotificationCenter.DefaultCenter.RemoveObserver(this, UIApplication.WillEnterForegroundNotification);
+            if (backgroundObserver != null)
+                NSNotificationCenter.DefaultCenter.RemoveObserver(backgroundObserver);
+
+            if (foregroundObserver != null)
+                NSNotificationCenter.DefaultCenter.RemoveObserver(foregroundObserver);
         }
 
         protected override void DestroyFrameBuffer()
@@ -252,6 +269,9 @@ namespace CocosSharp
 
         internal void RunIteration(NSTimer timer)
         {
+            if (GL.GetErrorCode() != ErrorCode.NoError)
+                return;
+
             OnUpdateFrame(null);
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, Framebuffer);
@@ -265,7 +285,6 @@ namespace CocosSharp
 
             if (GraphicsContext == null || GraphicsContext.IsDisposed)
                 return;
-
 
             if (!GraphicsContext.IsCurrent)
                 MakeCurrent();
@@ -289,6 +308,12 @@ namespace CocosSharp
 
             Tick();
         }
+
+        void ProcessInput()
+        {
+            ProcessMobileInput ();
+        }
+
 
         #endregion Run loop
 
@@ -332,7 +357,7 @@ namespace CocosSharp
             foreach (UITouch touch in touches) 
             {
                 var location = touch.LocationInView(touch.View);
-                var position = new CCPoint((float)location.X, (float)location.Y);
+                var position = new CCPoint((float)(location.X * Layer.ContentsScale), (float)(location.Y * Layer.ContentsScale));
 
                 var id = touch.Handle.ToInt32();
 

@@ -5,41 +5,90 @@
         author          ="Rami Tabbara" 
         copyright       ="MIT X11" 
         url             ="https://github.com/mono/CocosSharp" 
-        description     ="Setup CocosSharp projects for either mobile (iOS/Android) or Mac targets"
+        description     ="Setup CocosSharp projects for iOS or Android targets"
         category        ="CocosSharp"
-        version         ="1.6.1.0">
+        version         ="1.7.0.0-pre1">
 
     <Runtime>
         <!---iOS files -->
         <Import file    ="MonoDevelop.CocosSharp.iOS/SingleWindowed.iOS/MonoDevelop.CocosSharp.iOS.Project.xpt.xml" />
         <Import file    ="MonoDevelop.CocosSharp.iOS/Empty.iOS/MonoDevelop.CocosSharp.iOS.EmptyProject.xpt.xml" />
+
         <Import file    ="MonoDevelop.CocosSharp.iOS/Common.iOS/Entitlements.plist.xml" />
         <Import file    ="MonoDevelop.CocosSharp.iOS/Common.iOS/Info_iPhone.plist.xml" />
         <Import file    ="MonoDevelop.CocosSharp.iOS/Common.iOS/Info_iPad.plist.xml" />
         <Import file    ="MonoDevelop.CocosSharp.iOS/Common.iOS/Info_Universal.plist.xml" />
-        <Import file    ="MonoDevelop.CocosSharp.iOS/Common.iOS/Info_Universal_Old.plist.xml" />
+        <Import file    ="MonoDevelop.CocosSharp.iOS/Common.iOS/Info.plist.xml" />
         <Import file    ="MonoDevelop.CocosSharp.iOS/Common.iOS/Default-568h.png" />
         <Import file    ="MonoDevelop.CocosSharp.iOS/Common.iOS/AppDelegate.cs" />
+        <Import file    ="MonoDevelop.CocosSharp.iOS/Common.iOS/ViewController.cs" />
+        <Import file    ="MonoDevelop.CocosSharp.iOS/Common.iOS/ViewController.designer.cs" />
+        <Import file    ="MonoDevelop.CocosSharp.iOS/Common.iOS/Main.cs" />
+        <Import file    ="MonoDevelop.CocosSharp.iOS/Common.iOS/Main.storyboard" />
+        <Import file    ="MonoDevelop.CocosSharp.iOS/Common.iOS/LaunchScreen.xib" />
+        <Import file    ="MonoDevelop.CocosSharp.iOS/Common.iOS/AppIcons.json" />
 
         <!---Android files -->
         <Import file    ="MonoDevelop.CocosSharp.Android/SingleWindowed.Android/MonoDevelop.CocosSharp.Android.AndroidProject.xpt.xml" />
         <Import file    ="MonoDevelop.CocosSharp.Android/Empty.Android/MonoDevelop.CocosSharp.Android.EmptyProject.xpt.xml" />
-        <Import file    ="MonoDevelop.CocosSharp.Android/Common.Android/Icon-md.png" />
+
         <Import file    ="MonoDevelop.CocosSharp.Android/Common.Android/AboutAssets.txt" />
         <Import file    ="MonoDevelop.CocosSharp.Android/Common.Android/AboutResources.txt" />
-        <Import file    ="MonoDevelop.CocosSharp.Android/Common.Android/AssemblyInfo.Android.cs" />
+        <Import file    ="MonoDevelop.CocosSharp.Android/Common.Android/icon-hdpi.png" />
+        <Import file    ="MonoDevelop.CocosSharp.Android/Common.Android/icon-mdpi.png" />
+        <Import file    ="MonoDevelop.CocosSharp.Android/Common.Android/icon-xhdpi.png" />
+        <Import file    ="MonoDevelop.CocosSharp.Android/Common.Android/icon-xxhdpi.png" />
+        <Import file    ="MonoDevelop.CocosSharp.Android/Common.Android/icon-xxxhdpi.png" />
+        <Import file    ="MonoDevelop.CocosSharp.Android/Common.Android/AndroidManifest.xml" />
+        <Import file    ="MonoDevelop.CocosSharp.Android/Common.Android/Main.axml" />
+        <Import file    ="MonoDevelop.CocosSharp.Android/Common.Android/AssemblyInfo.cs" />
         <Import file    ="MonoDevelop.CocosSharp.Android/Common.Android/MainActivity.cs" />
         <Import file    ="MonoDevelop.CocosSharp.Android/Common.Android/Resource.cs" />
-
-        <!---Mac files -->
-        <Import file    ="MonoDevelop.CocosSharp.Mac/SingleWindowed.Mac/MonoDevelop.CocosSharp.Mac.MacProject.xpt.xml" />
-        <Import file    ="MonoDevelop.CocosSharp.Mac/Empty.Mac/MonoDevelop.CocosSharp.Mac.EmptyProject.xpt.xml" />
-        <Import file    ="MonoDevelop.CocosSharp.Mac/Common.Mac/Info_Mac.plist.xml" />
-        <Import file    ="MonoDevelop.CocosSharp.Mac/Common.Mac/AppDelegate.cs" />
 
         <!---PCL Mobile files -->
         <Import file    ="MonoDevelop.CocosSharp.Mobile/SingleWindowed.Mobile/MonoDevelop.CocosSharp.Mobile.MobileProject.xpt.xml" />
         <Import file    ="MonoDevelop.CocosSharp.Mobile/Empty.Mobile/MonoDevelop.CocosSharp.Mobile.EmptyProject.xpt.xml" />
+
+
+        <!---Xamarin.Forms files -->
+        <Import file    ="MonoDevelop.CocosSharp.Forms/Empty.Forms/MonoDevelop.CocosSharp.Forms.EmptyProject.xpt.xml" />
+        <Import file    ="MonoDevelop.CocosSharp.Forms/Showcase.Forms/MonoDevelop.CocosSharp.Forms.ShowcaseProject.xpt.xml" />
+
+        <Import file    ="MonoDevelop.CocosSharp.Forms/Android.Forms/AboutAssets.txt" />
+        <Import file    ="MonoDevelop.CocosSharp.Forms/Android.Forms/AboutResources.txt" />
+        <Import file    ="MonoDevelop.CocosSharp.Forms/Android.Forms/AndroidManifest.xml" />
+        <Import file    ="MonoDevelop.CocosSharp.Forms/Android.Forms/AssemblyInfo.cs" />
+        <Import file    ="MonoDevelop.CocosSharp.Forms/Android.Forms/icondrawable.png" />
+        <Import file    ="MonoDevelop.CocosSharp.Forms/Android.Forms/icondrawablehdpi.png" />
+        <Import file    ="MonoDevelop.CocosSharp.Forms/Android.Forms/icondrawablexhdpi.png" />
+        <Import file    ="MonoDevelop.CocosSharp.Forms/Android.Forms/icondrawablexxhdpi.png" />
+        <Import file    ="MonoDevelop.CocosSharp.Forms/Android.Forms/MainActivity.cs" />
+        <Import file    ="MonoDevelop.CocosSharp.Forms/Android.Forms/Resource.cs" />
+
+        <Import file    ="MonoDevelop.CocosSharp.Forms/iOS.Forms/AppDelegate.cs" />
+        <Import file    ="MonoDevelop.CocosSharp.Forms/iOS.Forms/Default-568h@2x.png" />
+        <Import file    ="MonoDevelop.CocosSharp.Forms/iOS.Forms/Default-Portrait.png" />
+        <Import file    ="MonoDevelop.CocosSharp.Forms/iOS.Forms/Default-Portrait@2x.png" />
+        <Import file    ="MonoDevelop.CocosSharp.Forms/iOS.Forms/Default.png" />
+        <Import file    ="MonoDevelop.CocosSharp.Forms/iOS.Forms/Default@2x.png" />
+        <Import file    ="MonoDevelop.CocosSharp.Forms/iOS.Forms/Entitlements.plist.xml" />
+        <Import file    ="MonoDevelop.CocosSharp.Forms/iOS.Forms/Icon-60@2x.png" />
+        <Import file    ="MonoDevelop.CocosSharp.Forms/iOS.Forms/Icon-60@3x.png" />
+        <Import file    ="MonoDevelop.CocosSharp.Forms/iOS.Forms/Icon-76.png" />
+        <Import file    ="MonoDevelop.CocosSharp.Forms/iOS.Forms/Icon-76@2x.png" />
+        <Import file    ="MonoDevelop.CocosSharp.Forms/iOS.Forms/Icon-Small-40.png" />
+        <Import file    ="MonoDevelop.CocosSharp.Forms/iOS.Forms/Icon-Small-40@2x.png" />
+        <Import file    ="MonoDevelop.CocosSharp.Forms/iOS.Forms/Icon-Small-40@3x.png" />
+        <Import file    ="MonoDevelop.CocosSharp.Forms/iOS.Forms/Icon-Small.png" />
+        <Import file    ="MonoDevelop.CocosSharp.Forms/iOS.Forms/Icon-Small@2x.png" />
+        <Import file    ="MonoDevelop.CocosSharp.Forms/iOS.Forms/Icon-Small@3x.png" />
+        <Import file    ="MonoDevelop.CocosSharp.Forms/iOS.Forms/Info_Universal.plist.xml" />
+        <Import file    ="MonoDevelop.CocosSharp.Forms/iOS.Forms/ITunesArtwork" />
+        <Import file    ="MonoDevelop.CocosSharp.Forms/iOS.Forms/ITunesArtwork@2x" />
+        <Import file    ="MonoDevelop.CocosSharp.Forms/iOS.Forms/LaunchScreen.storyboard" />
+        <Import file    ="MonoDevelop.CocosSharp.Forms/iOS.Forms/Main.cs" />
+
+        <Import file    ="MonoDevelop.CocosSharp.Forms/Common.Forms/App.cs" />
 
         <!---Common files -->
         <Import file    ="Common/MonoDevelop.CocosSharp.NewLayer.xft.xml" />
@@ -48,11 +97,11 @@
         <Import file    ="Common/monkey.xnb" />
         <Import file    ="Common/monkey_hd.png" />
         <Import file    ="Common/monkey_hd.xnb" />
-        <Import file    ="Common/GameAppDelegate.cs" />
         <Import file    ="Common/GameLayer.cs" />
 
         <!-- NuGet packages -->
-        <Import file    ="Packages/CocosSharp.PCL.Shared.1.6.1.0.nupkg" />
+        <Import file    ="Packages/CocosSharp.1.7.0.0-pre1.nupkg" />
+        <Import file    ="Packages/CocosSharp.Forms.1.7.0.0-pre1.nupkg" />
     </Runtime>
 
     <!--- Common dependencies -->
@@ -131,6 +180,24 @@
             <ProjectTemplate
                             id      ="MonoDevelop.CocosSharp.Mobile.MobileProject.SW"
                             file    ="MonoDevelop.CocosSharp.Mobile/SingleWindowed.Mobile/MonoDevelop.CocosSharp.Mobile.MobileProject.xpt.xml" />
+        </Extension>
+    </Module>
+
+
+    <!-- Xamarin.Forms project templates -->
+    <Module>
+        <Dependencies>
+            <Addin id="MonoAndroid" version="5.0"/>
+            <Addin id="IPhone" version="5.0"/>
+        </Dependencies>
+        <Extension path="/MonoDevelop/Ide/ProjectTemplates">
+            <ProjectTemplate
+                            id      ="MonoDevelop.CocosSharp.Forms.Empty"
+                            file    ="MonoDevelop.CocosSharp.Forms/Empty.Forms/MonoDevelop.CocosSharp.Forms.EmptyProject.xpt.xml"  />
+
+            <ProjectTemplate
+                            id      ="MonoDevelop.CocosSharp.Forms.Showcase"
+                            file    ="MonoDevelop.CocosSharp.Forms/Showcase.Forms/MonoDevelop.CocosSharp.Forms.ShowcaseProject.xpt.xml"  />
         </Extension>
     </Module>
 
